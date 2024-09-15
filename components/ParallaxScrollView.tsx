@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ThemedView } from '@/components/ThemedView';
+import { Input } from './inputs';
 
 const HEADER_HEIGHT = 250;
 
@@ -53,7 +54,9 @@ export default function ParallaxScrollView({
           ]}>
           {headerImage}
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <ThemedView style={styles.content}>
+          <Input keyboardType='numeric' placeholder='Name' type='text'/>
+        </ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
