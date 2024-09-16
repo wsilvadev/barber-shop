@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactElement } from 'react';
+import { useEffect, useState, type PropsWithChildren, type ReactElement } from 'react';
 import { StyleSheet, useColorScheme } from 'react-native';
 import Animated, {
   interpolate,
@@ -25,6 +25,16 @@ export default function ParallaxScrollView({
   const colorScheme = useColorScheme() ?? 'light';
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
+  const [text, setText] = useState('')
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if(text === 'error'){
+      setError('Password does not match')
+    }
+    else
+    setError('')
+  },[text]);
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -55,7 +65,10 @@ export default function ParallaxScrollView({
           {headerImage}
         </Animated.View>
         <ThemedView style={styles.content}>
-          <Input keyboardType='numeric' placeholder='Name' type='text'/>
+          <Input keyboardType='numeric' errors={{text: error}} icon='user' placeholder='Name' onTextChange={(text) => setText(text)} type='name'/>
+          <Input keyboardType='numeric' errors={{text: error}} icon='email' placeholder='E-mail' onTextChange={(text) => setText(text)} type='email'/>
+          <Input keyboardType='numeric'errors={{text: error}}  icon='eye' placeholder='Password' onTextChange={(text) => setText(text)} type='password'/>
+          <Input keyboardType='numeric' errors={{text: error}}  icon='eye' placeholder='Repeat password' onTextChange={(text) => setText(text)} type='password'/>
         </ThemedView>
       </Animated.ScrollView>
     </ThemedView>
