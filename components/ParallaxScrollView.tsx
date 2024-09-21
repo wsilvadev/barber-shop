@@ -8,7 +8,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ThemedView } from '@/components/ThemedView';
-import { Input } from './inputs';
+import { Input } from './input';
+import { Button } from './button';
 
 const HEADER_HEIGHT = 250;
 
@@ -66,9 +67,8 @@ export default function ParallaxScrollView({
         </Animated.View>
         <ThemedView style={styles.content}>
           <Input keyboardType='numeric' errors={{text: error}} icon='user' placeholder='Name' onTextChange={(text) => setText(text)} type='name'/>
-          <Input keyboardType='numeric' errors={{text: error}} icon='email' placeholder='E-mail' onTextChange={(text) => setText(text)} type='email'/>
-          <Input keyboardType='numeric'errors={{text: error}}  icon='eye' placeholder='Password' onTextChange={(text) => setText(text)} type='password'/>
-          <Input keyboardType='numeric' errors={{text: error}}  icon='eye' placeholder='Repeat password' onTextChange={(text) => setText(text)} type='password'/>
+          <Button text='ok' onPress={() => { 
+          }}/>
         </ThemedView>
       </Animated.ScrollView>
     </ThemedView>
