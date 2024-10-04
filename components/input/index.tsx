@@ -4,41 +4,43 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import styles from './styles'
 import { useEffect, useState, useRef } from 'react';
+import { fontAwesomeNames, materialCommunityIconsNames, materialIconsNames } from './vector-icons'
 
 type props = {
     type: string;
     placeholder: string;
     keyboardType: KeyboardTypeOptions | undefined;
     onTextChange: (text: string) => void;
-    icon?: string;
+    icon: IconProps['iconName'];
     errors?: { [text: string]: string; };
 }
 
-type icon = {
-    type: string;
-    iconName: string;
+interface IconProps {
+    iconName:
+    | (typeof fontAwesomeNames)[number]
+    | (typeof materialIconsNames)[number]
+    | (typeof materialCommunityIconsNames)[number]
+    | '?';
 }
 
-const Icon = ({ type, iconName }: icon) => {
-    switch (type) {
-        case 'name':
-            return (
-                <FontAwesome6 name={iconName} size={25} style={styles.icon} />
-            )
-        case 'email':
-            return (
-                <MaterialIcon name={iconName} size={25} style={styles.icon} />
-            )
-        case 'password':
-            return (
-                <MaterialCommunityIcons name={iconName} size={25} style={styles.icon} />
-            )
+const Icon = ({ iconName }: IconProps) => {
+    if (fontAwesomeNames.includes(iconName as (typeof fontAwesomeNames)[number])) {
+        return <FontAwesome6 name={iconName} size={25} style={styles.icon} />;
     }
+    if (materialIconsNames.includes(iconName as (typeof materialIconsNames)[number])) {
+        return <MaterialIcon name={iconName} size={25} style={styles.icon} />;
+    }
+    if (
+        materialCommunityIconsNames.includes(iconName as (typeof materialCommunityIconsNames)[number])
+    ) {
+        return <MaterialCommunityIcons name={iconName} size={25} style={styles.icon} />;
+    }
+    return null
 }
 
 export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, errors }: props) => {
     const [isPassword, setPasswordTextEntry] = useState<boolean>(false);
-    const [iconName, setIcon] = useState<string>('');
+    const [iconName, setIcon] = useState<typeof icon>(icon);
     const translateAnimation = useRef(new Animated.Value(-10)).current;
 
     const handleChangeText = (text: string) => {
@@ -53,7 +55,7 @@ export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, err
 
     useEffect(() => {
         setPasswordTextEntry(type === 'password');
-        setIcon(icon ?? '')
+        setIcon(icon ?? '?')
         if (errors?.text) {
             Animated.timing(translateAnimation, {
                 toValue: 10,
@@ -77,7 +79,7 @@ export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, err
         >
             {icon &&
                 <TouchableOpacity onPress={handlePasswordTextEntry}>
-                    <Icon iconName={iconName} type={type} />
+                    <Icon iconName={iconName} />
                 </TouchableOpacity>
             }
 
