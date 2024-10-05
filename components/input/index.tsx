@@ -1,44 +1,56 @@
-import { TextInput, KeyboardTypeOptions, SafeAreaView, TouchableOpacity, Text, Animated } from 'react-native';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome'
+import { TextInput, KeyboardType, SafeAreaView, TouchableOpacity, Text, Animated, View } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+
 import styles from './styles'
 import { useEffect, useState, useRef } from 'react';
-import { fontAwesomeNames, materialCommunityIconsNames, materialIconsNames } from './vector-icons'
+
+import FontAwesomeList  from 'react-native-vector-icons/glyphmaps/FontAwesome.json'
+import MaterialIconsList  from 'react-native-vector-icons/glyphmaps/MaterialIcons.json'
+import MaterialCommunityIconsList from 'react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json'
+
+const FontAwesomeKeys = Object.keys(FontAwesomeList) as (keyof typeof FontAwesomeList)[];
+const MaterialIconsKeys = Object.keys(MaterialIconsList) as (keyof typeof MaterialIconsList)[];
+const MaterialCommunityIconsKeys = Object.keys(MaterialCommunityIconsList) as (keyof typeof MaterialCommunityIconsList)[];
 
 type props = {
     type: string;
     placeholder: string;
-    keyboardType: KeyboardTypeOptions | undefined;
+    keyboardType?: KeyboardType ;
     onTextChange: (text: string) => void;
     icon: IconProps['iconName'];
-    errors?: { [text: string]: string; };
+    error: string;
 }
 
 interface IconProps {
-    iconName:
-    | (typeof fontAwesomeNames)[number]
-    | (typeof materialIconsNames)[number]
-    | (typeof materialCommunityIconsNames)[number]
+    iconName: 
+    | typeof FontAwesomeKeys[number]
+    | typeof MaterialIconsKeys[number] 
+    | typeof MaterialCommunityIconsKeys[number] 
     | '?';
 }
 
+const validFontAwesomeIcons = ['user', ]
+const validMaterialIcons = ['email' ]
+const validMaterialCommunityIcons = ['eye', 'eye-off' ]
+
 const Icon = ({ iconName }: IconProps) => {
-    if (fontAwesomeNames.includes(iconName as (typeof fontAwesomeNames)[number])) {
-        return <FontAwesome6 name={iconName} size={25} style={styles.icon} />;
+    const icons =[]
+    if(validFontAwesomeIcons.includes(iconName)){
+            icons.push(<FontAwesome key="fa" name={iconName} size={25} style={styles.icon} />);
     }
-    if (materialIconsNames.includes(iconName as (typeof materialIconsNames)[number])) {
-        return <MaterialIcon name={iconName} size={25} style={styles.icon} />;
+    if(validMaterialIcons.includes(iconName)){
+            icons.push(<MaterialIcons key="mi" name={iconName} size={25} style={styles.icon} />);
     }
-    if (
-        materialCommunityIconsNames.includes(iconName as (typeof materialCommunityIconsNames)[number])
-    ) {
-        return <MaterialCommunityIcons name={iconName} size={25} style={styles.icon} />;
+    if(validMaterialCommunityIcons.includes(iconName)){
+            icons.push(<MaterialCommunityIcons key="mci" name={iconName} size={25} style={styles.icon} />);
     }
-    return null
+    return <View >{icons}</View>;
+
 }
 
-export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, errors }: props) => {
+export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, error }: props) => {
     const [isPassword, setPasswordTextEntry] = useState<boolean>(false);
     const [iconName, setIcon] = useState<typeof icon>(icon);
     const translateAnimation = useRef(new Animated.Value(-10)).current;
@@ -56,7 +68,7 @@ export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, err
     useEffect(() => {
         setPasswordTextEntry(type === 'password');
         setIcon(icon ?? '?')
-        if (errors?.text) {
+        if (error) {
             Animated.timing(translateAnimation, {
                 toValue: 10,
                 duration: 200,
@@ -71,7 +83,7 @@ export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, err
                 useNativeDriver: true,
             }).start()
         }
-    }, [translateAnimation, errors]);
+    }, [translateAnimation, error]);
 
     return (
         <SafeAreaView
@@ -91,7 +103,7 @@ export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, err
                 onChangeText={text => handleChangeText(text)}
                 secureTextEntry={isPassword}
             />
-            {errors?.text &&
+            {error &&
                 <Animated.View
                     style={[styles.textViewError, {
                         opacity: translateAnimation.interpolate({
@@ -101,11 +113,9 @@ export const Input = ({ type, placeholder, keyboardType, onTextChange, icon, err
                         transform: [{ translateY: translateAnimation }],
                     }]}
                 >
-                    <MaterialIcon name='error' size={15} style={styles.errorIcon} />
-                    <Text style={styles.textError}  >{errors.text}</Text>
+                    <MaterialIcons name='error' size={15} style={styles.errorIcon} />
+                    <Text style={styles.textError}  >{ error }</Text>
                 </Animated.View>}
         </SafeAreaView>
-
-
     )
 }
